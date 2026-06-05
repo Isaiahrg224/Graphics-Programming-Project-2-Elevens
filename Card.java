@@ -19,6 +19,14 @@ public class Card {
         this.hitbox = new Rectangle(-10, -10, image.getWidth(), image.getHeight());
     }
 
+    public Card(String back){
+        if(back.equals("back")){
+            this.imageFileName = "card_back.png";
+            this.image = readImage();
+            this.hitbox = new Rectangle(-10, -10, image.getWidth(), image.getHeight());
+        }
+    }
+
     public Rectangle getHitbox() {
         return hitbox;
     }
@@ -60,5 +68,6 @@ public class Card {
             return null;
         }
     }
+
 
 }
