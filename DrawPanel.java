@@ -23,8 +23,8 @@ class DrawPanel extends JPanel implements MouseListener {
 
     public DrawPanel() {
         initilization = true;
-        easy = new Rectangle(100, 50, 150, 80);
-        hard = new Rectangle(100, 350, 150, 80);
+        easy = new Rectangle(90, 50, 300, 150);
+        hard = new Rectangle(90, 250, 300, 150);
 //        gameModeEasy = false;
         deck = new Deck();
         currentCards = new Card[3][3];
