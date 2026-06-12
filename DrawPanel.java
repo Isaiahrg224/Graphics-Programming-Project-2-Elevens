@@ -19,13 +19,14 @@ class DrawPanel extends JPanel implements MouseListener {
     boolean initilization;
     private Rectangle easy;
     private Rectangle hard;
+    private boolean win;
+    double winWaitStart;
 
 
     public DrawPanel() {
         initilization = true;
         easy = new Rectangle(90, 50, 300, 150);
         hard = new Rectangle(90, 250, 300, 150);
-//        gameModeEasy = false;
         deck = new Deck();
         currentCards = new Card[3][3];
         hitboxesOn = new boolean[3][3];
@@ -47,23 +48,87 @@ class DrawPanel extends JPanel implements MouseListener {
     }
 
     protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        int x1 = 0;
+        int y1 = 0;
+        long time = System.currentTimeMillis();
+        if ((time - originalTime) > 200) {
+            backroundIndex++;
+            originalTime = System.currentTimeMillis();
+        }
         if (initilization) {
+
+            for (int r = 0; r < 50; r++) {
+                for (int c = 0; c < 50; c++) {
+
+                    if ((r + 15) % 8 < 4 && (c + 14) % 8 < 4) {
+                      if((backroundIndex / 4) % 2 == 0){
+                          g.setColor(Color.red);
+                      }
+                      else{
+                          g.setColor(Color.white);
+                      }
+                    } else {
+                        if((backroundIndex / 4) % 2 == 0){
+                            g.setColor(Color.white);
+                        }
+                        else{
+                            g.setColor(Color.red);
+                        }
+                    }
+//                    if (!(g.getColor() == Color.white)) {
+//                        g.drawRect(x1, y1, 10, 10);
+//
+//                    }
+                        if (!(x1 >= 90 && x1 <= 380 && y1 >= 50 && y1 <= 190 || x1 >= 90 && x1 <= 380 && y1 >= 250 && y1 <= 390) ) {
+                           if(!(g.getColor() == Color.white)){
+                            g.drawRect(x1, y1, 10, 10);
+                        }
+                        }
+
+                    x1 += 10;
+                }
+                y1 += 10;
+                x1 = 0;
+            }
+            g.setColor(Color.black);
             g.drawRect(90, 50, 300, 150);
             g.drawRect(90, 250, 300, 150);
             g.drawString("Easy", 225, 130);
             g.drawString("Hard", 225, 330);
-        } else {
-            long time = System.currentTimeMillis();
-            if ((time - originalTime) > 200) {
-                backroundIndex++;
-                originalTime = System.currentTimeMillis();
+        }
+        else if(win){
+            for (int r = 0; r < 50; r++) {
+                for (int c = 0; c < 50; c++) {
+
+                   if ((r + c + backroundIndex) % 20 < 10 && ((r < 25 && c < 25) || (r > 24 && c > 24))) {
+                       g.setColor(Color.green);
+                    }
+                    else if (((49 - r) + (49 - c) + backroundIndex) % 20 < 10 && ((r > 24 && c < 25) || (r < 25 && c > 24))) {
+                        g.setColor(Color.green);
+                    }
+                    else {
+                        g.setColor(Color.blue);
+                    }
+                    g.drawRect(x1, y1, 10, 10);
+//                    if (x1 >= 200 && x1 <= 290 && y1 >= 200 && y1 <= 290 && (r + c) % 2 == 0) {
+//                        g.fillRect(x1, y1, 10, 10);
+//                    }
+                    x1 += 10;
+                }
+                y1 += 10;
+                x1 = 0;
             }
-            super.paintComponent(g);
-            int x1 = 0;
-            int y1 = 0;
-            String[][] backgroundColor = new String[50][50];
-            for (int r = 0; r < backgroundColor.length; r++) {
-                for (int c = 0; c < backgroundColor[0].length; c++) {
+            g.setColor(Color.black);
+            Font largerFont = new Font("Times New Roman", Font.PLAIN, 96);
+            g.setFont(largerFont);
+            g.drawString("You Win", 70, 267);
+
+
+        }
+         else {
+            for (int r = 0; r < 50; r++) {
+                for (int c = 0; c < 50; c++) {
                     if ((r + c + backroundIndex) % 30 < 10) {
                         if(gameModeEasy){
                             g.setColor(Color.blue);
@@ -125,6 +190,17 @@ class DrawPanel extends JPanel implements MouseListener {
             g.setColor(Color.black);
             g.drawString(("Cards Left: " + deck.deckList.size()), 100, 410);
             g.drawString(("Possible Moves Left:  " + possibleMoves(currentCards)), 100, 440);
+
+           win = true;
+            for(Card[] r : currentCards){
+                for(Card card : r){
+                    if(!(card.getImageFileName().equals("card_back.png"))){
+                       win = false;
+                    }
+                }
+            }
+
+
         }
     }
 
@@ -215,8 +291,10 @@ class DrawPanel extends JPanel implements MouseListener {
                                 hitboxesOn[r][c] = false;
                                 amountOfhitboxes--;
                             } else if (amountOfhitboxes < 3 && !flippedCards[r][c]) {
-                                hitboxesOn[r][c] = true;
-                                amountOfhitboxes++;
+                                if(!(currentCards[r][c].getImageFileName() == "card_back.png")) {
+                                    hitboxesOn[r][c] = true;
+                                    amountOfhitboxes++;
+                                }
                             }
 
                         }
